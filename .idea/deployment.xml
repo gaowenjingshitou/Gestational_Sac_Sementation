@@ -7,6 +7,9 @@
           <mappings>
             <mapping deploy="Gestational_Sac_Sementation" local="$PROJECT_DIR$" />
           </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/Plane" />
+          </excludedPaths>
         </serverdata>
       </paths>
       <paths name="gwj@113.108.182.54:7053 password (1)">

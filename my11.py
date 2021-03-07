@@ -4,30 +4,30 @@
 import tensorflow as tf
 # print("++++++++start2++++++++++")
 
-# def aa():
-#     print("run in aa() start")
-#     print("step1")
-#     num1=3
-#     num1=3
-#     num2=num1*4
-#     num3=num2*5
-#     print("Step2")
+def aa():
+    print("run in aa() start")
+    print("step1")
+    num1=3
 
-#     print("run in aa() end!!!")
-#
-#
-# if __name__=="__main__":
-#     print("main:step1")
-#     aa()
-#     print("main:step2")
-#     print("main:end!!!！")
+    num2=num1*4
+    num3=num2*5
+    print("Step2")
+
+    print("run in aa() end!!!")
+
+
+if __name__=="__main__":
+    print("main:step1")
+    aa()
+    print("main:step2")
+    print("main:end!!!！")
 
 # import torch
 #
 # print(torch.version.cuda)
 
-import tensorflow as tf
-print(tf.test.is_gpu_available())
+# import tensorflow as tf
+# print(tf.test.is_gpu_available())
 # import tensorflow as tf
 # print(tf.__version__)
 # # import os
