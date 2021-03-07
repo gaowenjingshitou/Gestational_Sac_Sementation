@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 def load_csv(root, filename):
     name2label = {}  # "sq...":0
 
-    for name in sorted(os.listdir(os.path.join(root)), reverse=False)[1:]:
+    for name in sorted(os.listdir(os.path.join(root)), reverse=False):
         print(name)
 
         if not os.path.isdir(os.path.join(root, name)):
