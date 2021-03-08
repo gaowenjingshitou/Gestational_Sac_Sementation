@@ -59,3 +59,10 @@ def _init_fn(worker_id):
 device = torch.device('cuda')
 print("device=",device)
 
+batchsz = 32
+epochs =50
+
+print("*******Start training******")
+print("共{}epoch".format(epochs))
+
+
