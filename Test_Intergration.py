@@ -21,7 +21,7 @@ from util import Flatten
 
 import torch
 flag = torch.cuda.is_available()
-print(flag)
+print("正在使用GPU",flag)
 #seed=3 #诊断的seed
 #手术的
 seed=3
@@ -135,7 +135,7 @@ def confusion_matrixes(model, loader):
     # y_true=y_true.cpu().numpy()
     auc = roc_auc_score(y_true, y_scores)
     #print('val_auc_origin', auc)
-    #return auc
+    return auc
 
 
 
@@ -381,7 +381,7 @@ def main():
 
 
     print("*********样本筛选中******************")
-    ###训练集的混淆矩阵
+    ###训练集的样本预测开始
     Inhosp_Nos_train, EXAM_NOs_train, y_trues_train, y_probs_train, y_preds_train, confusionmatrix_train=Train_Test(model, train_loader,optimal_threshold)
     train_AUC = Train_confusion_matrixes(model, train_loader)
     print("train_AUC=", train_AUC)
@@ -395,6 +395,9 @@ def main():
     # data.to_csv("data_val_0214.csv")  # 使用
     data.to_csv("data_train_resnest50_2021_0309.csv")  # 使用
     print("=========训练集所有样本预测结束==============")
+
+    #验证集预测开始
+
     print("========预测验证样本开始===============")
     Inhosp_Nos_val, EXAM_NOs_val, y_trues_val, y_probs_val, y_preds_val, confusionmatrix_val = \
         val_Test(model, val_loader, optimal_threshold)
