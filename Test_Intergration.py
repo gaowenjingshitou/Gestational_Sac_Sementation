@@ -6,6 +6,7 @@ from torch import optim, nn
 import seaborn as sns
 import visdom
 import torchvision
+from pandas.core.frame import DataFrame
 from sklearn import metrics
 from resnest.torch import resnest50
 from torch.utils.data import DataLoader
@@ -133,8 +134,8 @@ def confusion_matrixes(model, loader):
     y_scores = y_scores.cpu().numpy()
     # y_true=y_true.cpu().numpy()
     auc = roc_auc_score(y_true, y_scores)
-    print('val_auc_origin', auc)
-    return auc
+    #print('val_auc_origin', auc)
+    #return auc
 
 
 
@@ -184,7 +185,7 @@ def Val_optimal_threshold(model, loader):
     y_scores = y_scores.cpu().numpy()
 
     auc = roc_auc_score(y_trues_one_hot, y_scores)
-    print('val_auc',auc)
+    print('val_auc_Val_optimal_threshold',auc)
 
    # print("y_probs",y_probs)
     thresholds = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
@@ -225,7 +226,6 @@ def Val_optimal_threshold(model, loader):
     print("point=", point)
 
     return optimal_threshold,accuracy, precision,point
-
 
 
 
@@ -276,7 +276,7 @@ def Test(model, loader, optimal_threshold):
 
     correct = 0
     total = len(loader.dataset)
-    Inhosp_Nos, EXAM_NOs, y_trues, y_probs, preds_val = [], [], [], [], []
+    Inhosp_Nos, EXAM_NOs, y_trues, y_probs, preds = [], [], [], [], []
     for Inhosp_No, EXAM_NO, x, y in loader:
         x, y = x.to(device), y.to(device)
         y_trues.extend(list(y.cpu().numpy()))
@@ -294,18 +294,60 @@ def Test(model, loader, optimal_threshold):
     for j in y_probs:
 
         if j > optimal_threshold:
-            preds_val.append(1)
+            preds.append(1)
 
         else:
-            preds_val.append(0)
+            preds.append(0)
 
-    confusionmatrix_test = confusion_matrix(y_trues, preds_val)
-    print('confusionmatrix_test', confusionmatrix_test)
+    confusionmatrix = confusion_matrix(y_trues, preds)
+    print('confusionmatrix_test', confusionmatrix)
     # pred = logits.argmax(dim=1)
 
     #             y_preds.extend(list(pred.detach().cpu().numpy()))
 
-    return Inhosp_Nos, EXAM_NOs, y_trues, y_probs, preds_val, confusionmatrix_test
+    return Inhosp_Nos, EXAM_NOs, y_trues, y_probs, preds, confusionmatrix
+
+
+
+def val_Test(model, loader, optimal_threshold):
+    model.eval()
+
+    correct = 0
+    total = len(loader.dataset)
+    Inhosp_Nos, EXAM_NOs, y_trues, y_probs, preds = [], [], [], [], []
+    for Inhosp_No, EXAM_NO, x, y in loader:
+        x, y = x.to(device), y.to(device)
+        y_trues.extend(list(y.cpu().numpy()))
+        Inhosp_Nos.extend(Inhosp_No)
+        # print("EXAM_NO",list(EXAM_NO))
+        EXAM_NOs.extend(list(EXAM_NO))
+
+        with torch.no_grad():
+            logits = model(x)
+            y_prob = logits[:, 1]
+            y_prob = y_prob.detach().cpu().numpy()
+
+            y_probs.extend(list(y_prob))
+
+    for j in y_probs:
+
+        if j > optimal_threshold:
+            preds.append(1)
+
+        else:
+            preds.append(0)
+
+    confusionmatrix = confusion_matrix(y_trues, preds)
+    print('confusionmatrix_test', confusionmatrix)
+    # pred = logits.argmax(dim=1)
+
+    #             y_preds.extend(list(pred.detach().cpu().numpy()))
+
+    return Inhosp_Nos, EXAM_NOs, y_trues, y_probs, preds, confusionmatrix
+
+
+
+
 
 
 
@@ -332,24 +374,60 @@ def main():
     optimal_threshold,accuracy, precision,point = Val_optimal_threshold(model, val_loader)
     val_AUC = confusion_matrixes(model, val_loader)
     print("val_AUC=", val_AUC)
+    print("optimal_threshold=",optimal_threshold)
+    print("accuracy=", accuracy)
+    print("precision=", precision)
+    print("point=", point)
 
 
-    print("*********计算训练集的混淆矩阵******************")
+    print("*********样本筛选中******************")
     ###训练集的混淆矩阵
     Inhosp_Nos_train, EXAM_NOs_train, y_trues_train, y_probs_train, y_preds_train, confusionmatrix_train=Train_Test(model, train_loader,optimal_threshold)
-
-
-
     train_AUC = Train_confusion_matrixes(model, train_loader)
     print("train_AUC=", train_AUC)
 
-    print("*********计算测试集的混淆矩阵******************")
 
+    c = {"Inhosp_Nos_train": Inhosp_Nos_train, "EXAM_NOs_train": EXAM_NOs_train, "y_trues_train": y_trues_train, "y_probs_train": y_probs_train,
+         "y_preds_train": y_preds_train}  # 将列表a，b转换成字典
+    data = DataFrame(c)  # 将字典转换成为数据框
+    # data.to_csv("data_train_0214.csv") 使用
+    # data.to_csv("data_val_0214.csv")  # 使用
+    data.to_csv("data_train_resnest50_2021_0308.csv")  # 使用
+    print("=========训练集所有样本预测结束==============")
+    # print(data)
+    Inhosp_Nos_val, EXAM_NOs_val, y_trues_val, y_probs_val, y_preds_val, confusionmatrix_val = \
+        val_Test(model, val_loader, optimal_threshold)
+    Val_AUC = Train_confusion_matrixes(model, train_loader)
+    print("Val_AUC=", Val_AUC)
+
+    c = {"Inhosp_Nos_val": Inhosp_Nos_train, "EXAM_NOs_train": EXAM_NOs_train, "y_trues_train": y_trues_train,
+         "y_probs_train": y_probs_train,
+         "y_preds_train": y_preds_train}  # 将列表a，b转换成字典
+    data = DataFrame(c)  # 将字典转换成为数据框
+    # data.to_csv("data_train_0214.csv") 使用
+    # data.to_csv("data_val_0214.csv")  # 使用
+    data.to_csv("data_train_resnest50_2021_0308.csv")  # 使用
+    print("=========训练集所有样本预测结束==============")
+
+
+
+
+
+
+    print("*********计算测试集的混淆矩阵******************")
+    Inhosp_Nos_test, EXAM_NOs_test, y_trues_test, y_probs_test, preds_val_test, confusionmatrix_test= Test(model, test_loader,optimal_threshold)
     test_AUC = confusion_matrixes(model, test_loader)
     print("test_AUC=", test_AUC)
 
-    ###测试集的混淆矩阵
-    Inhosp_Nos_test, EXAM_NOs_test, y_trues_test, y_probs_test, preds_val_test, confusionmatrix_test= Test(model, test_loader,optimal_threshold)
+    c = {"Inhosp_Nos_test": Inhosp_Nos_test, "EXAM_NOs_test": EXAM_NOs_test, "y_trues_test": y_trues_test,
+         "y_probs_test": y_probs_test,"preds_val_test": preds_val_test}  # 将列表a，b转换成字典
+    data = DataFrame(c)  # 将字典转换成为数据框
+    # data.to_csv("data_train_0214.csv") 使用
+    # data.to_csv("data_val_0214.csv")  # 使用
+    data.to_csv("data_test_resnest50_2021_0308.csv")  # 使用
+
+
+
 
 
 
