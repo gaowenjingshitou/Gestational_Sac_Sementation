@@ -5,4 +5,7 @@
     <orderEntry type="jdk" jdkName="Remote Python 3.7.10 (sftp://gwj@113.108.182.54:7053/home/gwj/.conda/envs/tf1.13.1/bin/python)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
+  <component name="PyDocumentationSettings">
+    <option name="renderExternalDocumentation" value="true" />
+  </component>
 </module>

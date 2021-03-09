@@ -1,5 +1,4 @@
 #from Load_Inhosp_No_divided_v1 import Data
-from efficientnet_pytorch import EfficientNet
 import pretrainedmodels
 from torch import optim, nn
 #from Load_data_10_14 import Data
