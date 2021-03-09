@@ -385,6 +385,7 @@ def main():
     Inhosp_Nos_train, EXAM_NOs_train, y_trues_train, y_probs_train, y_preds_train, confusionmatrix_train=Train_Test(model, train_loader,optimal_threshold)
     train_AUC = Train_confusion_matrixes(model, train_loader)
     print("train_AUC=", train_AUC)
+    print("confusionmatrix_train")
 
 
     c = {"Inhosp_Nos_train": Inhosp_Nos_train, "EXAM_NOs_train": EXAM_NOs_train, "y_trues_train": y_trues_train, "y_probs_train": y_probs_train,
@@ -392,29 +393,29 @@ def main():
     data = DataFrame(c)  # 将字典转换成为数据框
     # data.to_csv("data_train_0214.csv") 使用
     # data.to_csv("data_val_0214.csv")  # 使用
-    data.to_csv("data_train_resnest50_2021_0308.csv")  # 使用
+    data.to_csv("data_train_resnest50_2021_0309.csv")  # 使用
     print("=========训练集所有样本预测结束==============")
-    # print(data)
+    print("========预测验证样本开始===============")
     Inhosp_Nos_val, EXAM_NOs_val, y_trues_val, y_probs_val, y_preds_val, confusionmatrix_val = \
         val_Test(model, val_loader, optimal_threshold)
-    Val_AUC = Train_confusion_matrixes(model, train_loader)
+    Val_AUC =confusion_matrixes(model, val_loader)
     print("Val_AUC=", Val_AUC)
 
-    c = {"Inhosp_Nos_val": Inhosp_Nos_train, "EXAM_NOs_train": EXAM_NOs_train, "y_trues_train": y_trues_train,
-         "y_probs_train": y_probs_train,
-         "y_preds_train": y_preds_train}  # 将列表a，b转换成字典
+    c = {"Inhosp_Nos_val": Inhosp_Nos_val, "EXAM_NOs_val": EXAM_NOs_val, "y_trues_val": y_trues_val,
+         "y_probs_val": y_probs_val,
+         "y_preds_val": y_preds_val}  # 将列表a，b转换成字典
     data = DataFrame(c)  # 将字典转换成为数据框
     # data.to_csv("data_train_0214.csv") 使用
     # data.to_csv("data_val_0214.csv")  # 使用
-    data.to_csv("data_train_resnest50_2021_0308.csv")  # 使用
-    print("=========训练集所有样本预测结束==============")
+    data.to_csv("data_val_resnest50_2021_0309.csv")  # 使用
+    print("=========验证集所有样本预测结束==============")
 
 
 
 
 
 
-    print("*********计算测试集的混淆矩阵******************")
+    print("*********计算测试集的预测结果******************")
     Inhosp_Nos_test, EXAM_NOs_test, y_trues_test, y_probs_test, preds_val_test, confusionmatrix_test= Test(model, test_loader,optimal_threshold)
     test_AUC = confusion_matrixes(model, test_loader)
     print("test_AUC=", test_AUC)
