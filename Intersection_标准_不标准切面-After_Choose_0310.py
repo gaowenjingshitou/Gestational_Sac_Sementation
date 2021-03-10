@@ -21,29 +21,7 @@ Intersection_标准_不标准.to_csv("Intersection_标准_不标准切面_After_
 
 print(len(Intersection))  #167
 
-
-
-#
 Plane_Data_Predict_True_0310_Choose=Plane_Data_Predict_True_0310.loc[Intersection,:]   #[6442 rows x 4 columns]
 Plane_Data_Predict_True_0310_Choose.to_csv("Plane_Data_Predict_True_0310_Choose.csv")
 
-print(Plane_Data_Predict_True_0310_Choose)
-
-
-
-# images=[]
-
-# images=os.listdir("/workspace/标准平面的选取算法/Plane/Non_Standard_Plane/")
-# print(len(images))
-# images=[ item.split(".")[0].split("_")[0] for item in images]
-# print(len(images))
-#
-# images1=[]
-# images1 += glob.glob(os.path.join('./Plane/Standard_plane/',  '*.jpg'))
-# print(len(images1))
-# images1=[ item.split("/")[-1].split("_")[0] for item in images1]
-# print(len(images1))
-# Intersection=list(set(images).intersection(set(images1)))
-# Intersection_标准_不标准=pd.DataFrame(Intersection)
-# Intersection_标准_不标准.to_csv("Intersection_标准_不标准切面_After_Choose_Sample.csv")
-# Intersection_标准_不标准
+print(Plane_Data_Predict_True_0310_Choose.shape)
